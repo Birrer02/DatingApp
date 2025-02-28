@@ -1,3 +1,18 @@
-git add codemagic.yaml
-git commit -m 'Add first workflow'
-git push
+workflows:
+  android-workflow:
+    name: Android Release Build
+    max_build_duration: 120
+    environment:
+      flutter: stable
+      android_signing:
+        - release_keystore  # Stelle sicher, dass dies mit deiner Keystore-Referenz übereinstimmt
+    scripts:
+      - flutter clean
+      - flutter pub get
+      - flutter build apk --release
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+    publishing:
+      email:
+        recipients:
+          - dein@email.com  # Ersetze durch deine E-Mail für Build-Benachrichtigungen
