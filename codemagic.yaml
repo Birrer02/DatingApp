@@ -5,27 +5,29 @@ workflows:
     environment:
       flutter: stable
       vars:
-        PACKAGE_NAME: "com.example.myapp" # Ersetze mit deinem echten Paketnamen
+        PACKAGE_NAME: "com.example.myapp"
       groups:
-        - google_credentials # Stelle sicher, dass dieser Environment-Variable korrekt gesetzt ist
-    android_signing:
-      keystore_path: $CM_KEYSTORE_PATH
-      keystore_password: $CM_KEYSTORE_PASSWORD
-      key_alias: $CM_KEY_ALIAS
-      key_password: $CM_KEY_PASSWORD
+        - google_credentials
+
     scripts:
+      - echo "📦 Installing http Package"
+      - flutter pub add http:^1.1.0  # NEU: Fügt die richtige Version von http hinzu
       - echo "📦 Running Flutter Clean"
       - flutter clean
       - echo "📦 Running Flutter Pub Get"
       - flutter pub get
-      - echo "🚀 Building Release APK"
+      - echo "🔧 Building APK"
       - flutter build apk --release
-      - echo "🚀 Building Release AAB"
-      - flutter build appbundle --release
+
     artifacts:
-      - build/*/outputs//.apk
-      - build/*/outputs//.aab
+      - build/app/outputs/flutter-apk/app-release.apk
+
     publishing:
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
+      android:
+        artifacts:
+          - app-release.apk
+        signing:
+          credentials: $CM_KEYSTORE_PATH
+          keystore_password: $CM_KEYSTORE_PASSWORD
+          key_alias: $CM_KEY_ALIAS
+          key_password: $CM_KEY_PASSWORD
